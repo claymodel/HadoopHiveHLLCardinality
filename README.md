@@ -14,7 +14,7 @@ which involves Linear Counting
 
 We have to deal with tera bytes IoT sensor data and its been more than billions of entries every 24 hours.
 To track down the event changes in the sensors, i.e., UV level, Carbon level, Air pressure, how many shifts in data
-occured, what level of threshold is transpassed and so on. 
+occured, what level of threshold is transpassed and so on, we have to write efficient low latency query and code.
 
 To detect this we might write a query like this as follows,
 
@@ -28,10 +28,10 @@ FROM sensor_streams GROUP BY 1;
 
 But to render the Dashboard and quick alarm notification its not sufficient to be waited long due to large data set and computing capacity.
 
-During Hadoop-Hive era last few years back we used to implement UADF and Mahout based machine learning matrix calculation
+Last few years during Hadoop-Hive era we used to implement UADF and Mahout based machine learning matrix calculation
 analysis to mimic HLL and minimize the calculation time in 8 hours from 24 hours. This incurs huge cost in employing Xlarge instances to speed up the computation.
 
-Lets we have no problem with the cost but to get the query result quickkly then AWS REDSHIFT still has the solution as follows.
+For example if we have no problem with the cost but to get the query result quickly then AWS REDSHIFT still has the solution as follows.
 
 ## REDSHIFT HLL Computation Way
 
@@ -41,6 +41,8 @@ SELECT DATE_TRUNC('day',event_time),
   APPROXIMATE COUNT(DISTINCT uv_level)
 FROM sensor_streams GROUP BY 1;
 ```
+
+But if we want to minimize the computation cost in both economic and computer resources, we have to implement on premise data base cluster with n+1 redundency and HLL codes.
 
 ## Time Series Database or Postgres Computational Way for HLL
 
