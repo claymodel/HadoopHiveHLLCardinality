@@ -1,0 +1,16 @@
+version: '3'
+services:
+ master:
+  container_name: 'hll_master'
+  image: 'elias/hll:latest'
+  ports: ['3232:3232']
+  labels: ['jp.elias.data.role=Master']
+  volumes: ['/var/run/data']
+ worker:
+  image: 'elias/hll:latest'
+  labels: ['jp.elias.data.role=Worker']
+ config:
+  container_name: 'hll_config'
+  image: 'elias/hll-repot:latest'
+  volumes: ['/var/run/docker.sock:/tmp/docker.sock']
+  volumes_from: ['master']
