@@ -19,7 +19,11 @@ occured, what level of threshold is transpassed and so on.
 To detect this we might write a query like this as follows,
 
 ```
-SELECT DATE_TRUNC('day',event_time), COUNT(DISTINCT device_id), COUNT(DISTINCT uv_level) FROM sensor_streams GROUP BY 1;
+SELECT 
+  DATE_TRUNC('day',event_time), 
+  COUNT(DISTINCT device_id), 
+  COUNT(DISTINCT uv_level) 
+FROM sensor_streams GROUP BY 1;
 ```
 
 But to render the Dashboard and quick alarm notification its not sufficient to be waited long due to large data set and computing capacity.
