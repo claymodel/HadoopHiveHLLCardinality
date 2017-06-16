@@ -12,17 +12,17 @@ which involves Linear Counting
 
 # HLL Explanation
 
-We have to deal with tera bytes IoT sensor data and its benn more than billions of entries every 24 hours.
+We have to deal with tera bytes IoT sensor data and its been more than billions of entries every 24 hours.
 To track down the event changes in the sensors, i.e., UV level, Carbon level, Air pressure, how many shifts in data
 occured, what level of threshold is transpassed and so on. 
 
-To detect this we might write a query likely as follows,
+To detect this we might write a query like this as follows,
 
 ```
 SELECT DATE_TRUNC('day',event_time), COUNT(DISTINCT device_id), COUNT(DISTINCT uv_level) FROM sensor_streams GROUP BY 1;
 ```
 
-But to render the Dashboard its not sufficient to be waited long due to large data set and computing capacity.
+But to render the Dashboard and quick alarm notification its not sufficient to be waited long due to large data set and computing capacity.
 
 During Hadoop-Hive era last few years back we used to implement UADF and Mahout based machine learning matrix calculation
 analysis to mimic HLL and minimize the calculation time in 8 hours from 24 hours. This incurs huge cost in employing Xlarge instances to speed up the computation.
