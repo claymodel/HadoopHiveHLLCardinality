@@ -32,7 +32,9 @@ Lets we have no problem with the cost but to get the query result quickkly then 
 ## REDSHIFT HLL Computation Way
 
 ```
-SELECT DATE_TRUNC('day',event_time), APPROXIMATE COUNT(DISTINCT device_id), APPROXIMATE COUNT(DISTINCT uv_level)
+SELECT DATE_TRUNC('day',event_time), 
+  APPROXIMATE COUNT(DISTINCT device_id), 
+  APPROXIMATE COUNT(DISTINCT uv_level)
 FROM sensor_streams GROUP BY 1;
 ```
 
@@ -43,19 +45,34 @@ FROM sensor_streams GROUP BY 1;
 Lets cluster the data and pre-detemine for a portion of error say 5% more or less.
 
 ```
-SELECT 31 - FLOOR(LOG(2, HASHTEXT(device_id) & ~(1 << 31)))) AS bucket_hash FROM sensor_streams;
+SELECT 
+  31 - FLOOR(LOG(2, HASHTEXT(device_id) & ~(1 << 31)))) 
+  AS bucket_hash 
+FROM sensor_streams;
 ```
 
 Here's the SQL for grouping MSBs by date and bucket:
 
 ```
-SELECT DATE(created_at) as created_date, HASHTEXT(device_id) & (512 - 1) as bucket_num, 31 - floor(LOG(2, MIN(HASHTEXT(device_id) & ~(1 << 31)))) as bucket_hash FROM sensor_streams GROUP BY 1, 2 ORGER BY 1, 2
+SELECT 
+  DATE(created_at) as created_date, 
+  HASHTEXT(device_id) & (512 - 1) as bucket_num, 
+  31 - floor(LOG(2, MIN(HASHTEXT(device_id) & ~(1 << 31)))) as bucket_hash 
+FROM sensor_streams 
+GROUP BY 1, 2 
+ORGER BY 1, 2
 ```
 
 ### COUNTING Step
 
 ```
-SELECT created_date, ((POW(512, 2) * (0.7213 / (1 + 1.079 / 512))) / ((512 - COUNT(1)) + SUM(POW(2, -1 * bucket_hash))))::INT AS num_uniques, 512 - COUNT(1) AS num_zero_buckets FROM bucketed_data GROUP BY 1 ORDER BY 1;
+SELECT 
+  created_date, 
+  ((POW(512, 2) * (0.7213 / (1 + 1.079 / 512))) / ((512 - COUNT(1)) + SUM(POW(2, -1 * bucket_hash))))::INT AS num_uniques, 
+  512 - COUNT(1) AS num_zero_buckets 
+FROM bucketed_data 
+GROUP BY 1 
+ORDER BY 1;
 ```
 
 ### Hash Modeling Scenario
