@@ -11,6 +11,6 @@ services:
   labels: ['jp.elias.data.role=Worker']
  config:
   container_name: 'hll_config'
-  image: 'elias/hll-repot:latest'
+  image: 'elias/hll-report:latest'
   volumes: ['/var/run/docker.sock:/tmp/docker.sock']
   volumes_from: ['master']
